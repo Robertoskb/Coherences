@@ -1,0 +1,1 @@
+Baixe e extraie aqui os arquivos de microdados do ENEM 2012 no site do INEP.
