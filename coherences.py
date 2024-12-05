@@ -15,7 +15,7 @@ def tx_coherence(coherence):
     return text
 
 
-year = '2023'  # change to the year you want to generate the data
+year = '2021'  # change to the year you want to generate the data
 subjects = ['MT', 'CH', 'CN', 'LC']
 
 participants_path = f"{year}/DADOS/MICRODADOS_ENEM_{year}.csv"
@@ -39,7 +39,8 @@ start = time.time()
 participants = Participants.read_participants(
     participants_path, collumns_participants)
 
-collumns_questions = ['CO_POSICAO', 'SG_AREA', 'NU_PARAM_B', 'CO_PROVA']
+collumns_questions = ['CO_POSICAO', 'SG_AREA',
+                      'NU_PARAM_A', 'NU_PARAM_B', 'NU_PARAM_C', 'CO_PROVA']
 questions = Questions.read_questions(questions_path, collumns_questions)
 
 
@@ -49,12 +50,16 @@ def generate_data(participants, subjects, questions):
         for subject in subjects:
             corrects = count_corrects(participants, participant, subject)
             points, coer = coherence(participant, questions, subject)
-            tx_coherence_ = tx_coherence(coer)
+            tx_coherence_a = tx_coherence(coer[0])
+            tx_coherence_b = tx_coherence(coer[1])
+            tx_coherence_c = tx_coherence(coer[2])
 
             row.update({
                 f'NU_NOTA_{subject}': points,
                 f'NU_CORRETAS_{subject}': corrects,
-                f'TX_COERENCIA_{subject}': tx_coherence_,
+                f'TX_COERENCIA_A_{subject}': tx_coherence_a,
+                f'TX_COERENCIA_B_{subject}': tx_coherence_b,
+                f'TX_COERENCIA_C_{subject}': tx_coherence_c,
                 f'CO_PROVA_{subject}': getattr(participant,
                                                f'CO_PROVA_{subject}')
             })
@@ -76,7 +81,9 @@ fieldnames = (
     ['TP_LINGUA'] +
     [f'NU_NOTA_{s}' for s in subjects] +
     [f'NU_CORRETAS_{s}' for s in subjects] +
-    [f'TX_COERENCIA_{s}' for s in subjects] +
+    [f'TX_COERENCIA_A_{s}' for s in subjects] +
+    [f'TX_COERENCIA_B_{s}' for s in subjects] +
+    [f'TX_COERENCIA_C_{s}' for s in subjects] +
     [f'CO_PROVA_{s}' for s in subjects]
 )
 

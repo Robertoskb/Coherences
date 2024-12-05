@@ -52,34 +52,40 @@ def count_corrects_all(participants: pd.DataFrame, subject):
         count_corrects(participants, participant, subject)
 
 
-def coherence(participant, questions: pd.DataFrame, subject):
+def coherence(participant, questions: pd.DataFrame, subject,):
     points = getattr(participant, f'NU_NOTA_{subject}')
     answers = getattr(participant, f'TX_RESPOSTAS_{subject}')
     anskey = getattr(participant, f'TX_GABARITO_{subject}')
     language = getattr(participant, 'TP_LINGUA')
 
     if str(points) == 'nan':
-        return points, []
+        return points, ([], [], [])
     if language == 1 and subject == 'LC':
         anskey = anskey[5:]
     elif language == 0 and subject == 'LC':
         anskey = anskey[:5] + anskey[10:]
 
     coer = []
-
     if type(answers) is not str or type(anskey) is not str:
-        return points, coer
+        return points, ([], [], [])
 
-    dificults = questions[questions['CO_PROVA'] ==
-                          getattr(participant, f'CO_PROVA_{subject}')]['NU_PARAM_B'].tolist()  # noqa: E501
+    # Selecionar as colunas desejadas filtradas por uma condição
+    parameters = questions[
+        questions['CO_PROVA'] == getattr(participant, f'CO_PROVA_{subject}')][[
+            'NU_PARAM_A', 'NU_PARAM_B', 'NU_PARAM_C']].apply(tuple, axis=1
+                                                             ).tolist()
 
     answers = answers.replace('99999', '')
     for i in range(len(answers)):
-        coer.append((answers[i] == anskey[i], dificults[i]))
+        coer.append((answers[i] == anskey[i], parameters[i]
+                    [0], parameters[i][1], parameters[i][2]))
 
-    coer = sorted(coer, key=lambda x: (str(x[1]) == 'nan', x[1]))
+    coer_a = sorted(coer, key=lambda x: (str(x[1]) == 'nan', x[1]))
+    coer_b = sorted(coer, key=lambda x: (str(x[2]) == 'nan', x[2]))
+    coer_c = sorted(coer, key=lambda x: (
+        str(x[3]) != 'nan', x[3]), reverse=True)
 
-    return points, coer
+    return points, (coer_a, coer_b, coer_c)
 
 
 if __name__ == '__main__':
