@@ -69,11 +69,14 @@ def coherence(participant, questions: pd.DataFrame, subject,):
     if type(answers) is not str or type(anskey) is not str:
         return points, ([], [], [])
 
-    # Selecionar as colunas desejadas filtradas por uma condição
     parameters = questions[
         questions['CO_PROVA'] == getattr(participant, f'CO_PROVA_{subject}')][[
             'NU_PARAM_A', 'NU_PARAM_B', 'NU_PARAM_C']].apply(tuple, axis=1
                                                              ).tolist()
+    if language == 1 and subject == 'LC':
+        parameters = parameters[5:]
+    elif language == 0 and subject == 'LC':
+        parameters = parameters[:5] + parameters[10:]
 
     answers = answers.replace('99999', '')
     for i in range(len(answers)):
