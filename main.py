@@ -16,20 +16,21 @@ class Coherences:
 
 
 if __name__ == "__main__":
-    year = 2021
-    subject = 'MT'
+    year = 2023
+    subject = 'LC'
     path = f'coherences_{year}.csv'
     columns = [f'TX_COERENCIA_A_{subject}',
                f'TX_COERENCIA_B_{subject}',
                f'TX_COERENCIA_C_{subject}',
                f'NU_NOTA_{subject}',
-               f'NU_CORRETAS_{subject}',]
+               f'NU_CORRETAS_{subject}',
+               f'CO_PROVA_{subject}']
     coherence = Coherences.read_coherences(path, columns)
 
     coherence = coherence.sort_values(
         by=f'NU_NOTA_{subject}', ascending=False)
-    # coherence = coherence[coherence[f'NU_NOTA_{subject}'] == 945.6]
-    coherence = coherence[coherence[f'NU_CORRETAS_{subject}'] == 35]
+    coherence = coherence[coherence[f'NU_NOTA_{subject}'] == 650]
+    # coherence = coherence[coherence[f'NU_CORRETAS_{subject}'] == 20]
 
     for c in coherence.itertuples():
         points = getattr(c, f'NU_NOTA_{subject}')
@@ -37,7 +38,6 @@ if __name__ == "__main__":
         coherence_a = getattr(c, f'TX_COERENCIA_A_{subject}')
         coherence_b = getattr(c, f'TX_COERENCIA_B_{subject}')
         coherence_c = getattr(c, f'TX_COERENCIA_C_{subject}')
-        print(points, corrects)
-        # print(coloring_coherences(coherence_b))
-        print(coloring_coherences(coherence_c), end='')
+
+        print(points, corrects, coloring_coherences(coherence_b), end=' ')
         input()

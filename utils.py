@@ -1,6 +1,23 @@
 import difflib
 import pandas as pd
 
+dict_parameters = {}
+
+
+def get_parameters(questions: pd.DataFrame, exam_code,):
+
+    global dict_parameters
+
+    if dict_parameters.get(exam_code):
+        return dict_parameters[exam_code]
+
+    dict_parameters[exam_code] = questions[questions['CO_PROVA'] == exam_code][[  # noqa: E501
+        'NU_PARAM_A',
+        'NU_PARAM_B',
+        'NU_PARAM_C']].apply(tuple, axis=1).tolist()
+
+    return dict_parameters[exam_code]
+
 
 def similarity(a, b):
     return difflib.SequenceMatcher(None, a, b).ratio()
@@ -60,23 +77,21 @@ def coherence(participant, questions: pd.DataFrame, subject,):
 
     if str(points) == 'nan':
         return points, ([], [], [])
-    if language == 1 and subject == 'LC':
-        anskey = anskey[5:]
-    elif language == 0 and subject == 'LC':
-        anskey = anskey[:5] + anskey[10:]
 
     coer = []
     if type(answers) is not str or type(anskey) is not str:
         return points, ([], [], [])
 
-    parameters = questions[
-        questions['CO_PROVA'] == getattr(participant, f'CO_PROVA_{subject}')][[
-            'NU_PARAM_A', 'NU_PARAM_B', 'NU_PARAM_C']].apply(tuple, axis=1
-                                                             ).tolist()
+    parameters = get_parameters(questions, getattr(
+        participant, f'CO_PROVA_{subject}'))
+
     if language == 1 and subject == 'LC':
         parameters = parameters[5:]
+        anskey = anskey[5:]
+
     elif language == 0 and subject == 'LC':
         parameters = parameters[:5] + parameters[10:]
+        anskey = anskey[:5] + anskey[10:]
 
     answers = answers.replace('99999', '')
     for i in range(len(answers)):

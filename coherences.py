@@ -15,7 +15,7 @@ def tx_coherence(coherence):
     return text
 
 
-year = '2021'  # change to the year you want to generate the data
+year = '2023'
 subjects = ['MT', 'CH', 'CN', 'LC']
 
 participants_path = f"{year}/DADOS/MICRODADOS_ENEM_{year}.csv"
