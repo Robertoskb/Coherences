@@ -57,8 +57,6 @@ def count_corrects(participants, participant, subject):
         if answers[i] == anskey[i]:
             corrects += 1
 
-    participants.at[participant.Index, f'NU_CORRETAS_{subject}'] = corrects
-
     return corrects
 
 
@@ -66,7 +64,8 @@ def count_corrects_all(participants: pd.DataFrame, subject):
     participants[f'NU_CORRETAS_{subject}'] = 0
 
     for participant in participants.itertuples():
-        count_corrects(participants, participant, subject)
+        corrects = count_corrects(participants, participant, subject)
+        participants.at[participant.Index, f'NU_CORRETAS_{subject}'] = corrects
 
 
 def coherence(participant, questions: pd.DataFrame, subject,):
