@@ -36,6 +36,21 @@ def coloring_coherences(coherences):
     return text
 
 
+def coloring_coherences_str(coherences):
+    txt = ''
+    colors = {
+        '0': '□',
+        '1': '■',
+        '2': '▨'
+
+    }
+
+    for coherence in coherences:
+        txt += colors[str(coherence[0])]
+
+    return txt
+
+
 def count_corrects(participants, participant, subject):
     corrects = 0
     answers = getattr(participant, f'TX_RESPOSTAS_{subject}')

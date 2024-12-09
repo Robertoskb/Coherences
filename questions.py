@@ -21,8 +21,8 @@ if __name__ == '__main__':
     questions = Questions.read_questions(path, columns)
 
     questions = questions.sort_values(by='NU_PARAM_B')
-    questions = questions[questions['SG_AREA'] == 'LC']
-    questions = questions[questions['CO_PROVA'] == 1204]
+    questions = questions[questions['SG_AREA'] == 'MT']
+    questions = questions[questions['CO_PROVA'] == 1214]
 
-    for c, q in enumerate(questions.itertuples(), 1):
-        print(c)
+    for q in questions.itertuples():
+        print(q.CO_POSICAO, q.NU_PARAM_B)
