@@ -110,7 +110,7 @@ plt.axvline(x=y_min, color='b', linestyle='--', label='Min')
 
 plt.legend()
 plt.xlabel('Points')
-plt.ylabel('Number of participants')
+plt.ylabel('Cumulative frequency of participants')
 
 plt.title(
     f'Points of participants with {target} correct answers in {subject} in the ENEM {year}')  # noqa: E501
@@ -141,5 +141,7 @@ plt.figtext(
 plt.figtext(0.55, 0.005,
             f'{cc(coh_0_min[:firsts_inc])} {cc(coh_0_min[firsts_inc:])}',
             fontsize=10)
+
+plt.savefig(f'Graphics/{subject}_{target_cor}_{target_inc}.png')
 
 plt.show()
