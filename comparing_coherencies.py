@@ -19,8 +19,9 @@ def check_min_coh(points, coh, current_min, current_coh):
     return current_min, current_coh
 
 
+abso = True
 year = 2023
-subject = 'MT'
+subject = 'CN'
 path = f'coherences_{year}.csv'
 columns = [f'TX_COERENCIA_A_{subject}',
            f'TX_COERENCIA_B_{subject}',
@@ -61,6 +62,9 @@ count_start_1 = 0
 points_list_0 = []
 points_list_1 = []
 
+absolut_freq_0 = defaultdict(int)
+absolut_freq_1 = defaultdict(int)
+
 target = 30
 
 coherence = coherence[coherence[f'NU_CORRETAS_{subject}'] == target]
@@ -80,6 +84,7 @@ for c in coherence.itertuples():
     if coherence_b[:firsts_inc].count('0') >= target_inc:
         count_start_0 += 1
         points_list_0.append(points)
+        absolut_freq_0[points//5 * 5] += 1
 
         max_0, coh_0_max = check_max_coh(points, coherence_b, max_0, coh_0_max)
         min_0, coh_0_min = check_min_coh(points, coherence_b, min_0, coh_0_min)
@@ -87,12 +92,21 @@ for c in coherence.itertuples():
     elif coherence_b[:firsts_cor].count('1') >= target_cor:
         count_start_1 += 1
         points_list_1.append(points)
+        absolut_freq_1[points//5 * 5] += 1
 
         max_1, coh_1_max = check_max_coh(points, coherence_b, max_1, coh_1_max)
         min_1, coh_1_min = check_min_coh(points, coherence_b, min_1, coh_1_min)
 
-y_0 = list(range(1, count_start_0 + 1))
-y_1 = list(range(1, count_start_1 + 1))
+if abso:
+    label = 'Absolute frequency of participants'
+    y_0 = list(absolut_freq_0.values())
+    points_list_0 = list(absolut_freq_0.keys())
+    y_1 = list(absolut_freq_1.values())
+    points_list_1 = list(absolut_freq_1.keys())
+else:
+    label = 'Cumulative frequency of participants'
+    y_0 = list(range(1, count_start_0 + 1))
+    y_1 = list(range(1, count_start_1 + 1))
 
 y_max = max_avg_min[target][2]
 y_min = max_avg_min[target][0]
@@ -101,7 +115,7 @@ y_avg = max_avg_min[target][1][0] / max_avg_min[target][1][1]
 
 plt.figure(figsize=(20, 10))
 plt.plot(points_list_0, y_0,
-         label=f'{target_inc}+ incorrects in the first {firsts_inc} easy questions')  # noqa: E501
+         label=f'{target_inc}+ incorrects in the first {firsts_inc} easy questions', )  # noqa: E501
 plt.plot(points_list_1, y_1,
          label=f'{target_cor}+ corrects in the first {firsts_cor} easy questions')  # noqa: E501
 plt.axvline(x=y_max, color='r', linestyle='--', label='Max')
@@ -110,7 +124,7 @@ plt.axvline(x=y_min, color='b', linestyle='--', label='Min')
 
 plt.legend()
 plt.xlabel('Points')
-plt.ylabel('Cumulative frequency of participants')
+plt.ylabel(label)
 
 plt.title(
     f'Points of participants with {target} correct answers in {subject} in the ENEM {year}')  # noqa: E501
@@ -142,6 +156,7 @@ plt.figtext(0.55, 0.005,
             f'{cc(coh_0_min[:firsts_inc])} {cc(coh_0_min[firsts_inc:])}',
             fontsize=10)
 
-plt.savefig(f'Graphics/{subject}_{target_cor}_{target_inc}.png')
+plt.savefig(
+    f'Graphics/{subject}_{target_cor}_{target_inc}{"_abs"if abso else ""}.png')
 
 plt.show()
